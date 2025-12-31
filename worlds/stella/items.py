@@ -147,11 +147,23 @@ item_name_to_id: Dict[str, int] = {
 }
 
 deck_id_to_name: Dict[int, str] = {
-    data.code: item_name for item_name, data in item_table.items() if isDeck(item_name)
+    data.code: item_name for item_name, data in item_table.items() if data.code and isDeck(item_name)
 }
 
 deck_name_to_id: Dict[str, int] = {
-    item_name: data.code for item_name, data in item_table.items() if isDeck(item_name)
+    item_name: data.code for item_name, data in item_table.items() if data.code and isDeck(item_name)
+}
+
+cards: Dict[int, str] = {
+    data.code: data.code for item_name, data in item_table.items() if data.code and isCard(item_name)
+}
+
+elements: Dict[int, str] = {
+    data.code: data.code for item_name, data in item_table.items() if data.code and isElement(item_name)
+}
+
+traps: Dict[int, str] = {
+    data.code: data.code for item_name, data in item_table.items() if data.code and isTrap(item_name)
 }
 
 def isDeck(item_name: str) -> bool: 

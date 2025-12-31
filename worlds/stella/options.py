@@ -28,7 +28,7 @@ class DifficultyToWin(Range):
     when the goal "beat difficulty" or "beat decks on difficulty" is selected, the difficulty required to complete the archipelago run
     """
     display_name = "required difficulty to win"
-    range_start = 1
+    range_start = 0
     range_end = 10
     default = 5
 
