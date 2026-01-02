@@ -1,10 +1,11 @@
 from typing import Dict, Union, List
 from worlds.AutoWorld import World
-from .items import StellaItem, ItemData, cards, item_table, isYourDeck, isTheirDeck, isProgression, item_name_to_id, item_id_to_name
+from .items import StellaItem, ItemData, cards, item_table, isYourDeck, isTheirDeck, isProgression, item_name_to_id, item_id_to_name, deck_id_to_name, cards_and_elements
 from .items import offset as item_offset
-from .locations import StellaLocation, stella_location_name_to_id, stella_location_id_to_name
+from .locations import StellaLocation, stella_location_name_to_id, stella_location_id_to_name, stella_location_id_to_difficulty, stella_location_id_to_lightyear
 from .options import StellaOptions
-from BaseClasses import ItemClassification, Region
+from BaseClasses import ItemClassification, Region, LocationProgressType
+from worlds.generic.Rules import add_rule
 
 #https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md
 
@@ -115,3 +116,22 @@ class StellaWorld(World):
 
         self.multiworld.regions.append(menu_region)
         all_locations: List[StellaLocation] = list()
+
+        for deck in deck_id_to_name:
+            deck_name = deck_id_to_name[deck]
+            deck_region = Region(deck_name, self.player, self.multiworld)
+            for location in stella_location_name_to_id:
+                if str(location).startswith(deck_name):
+                    location_id = stella_location_name_to_id[location]
+                    difficulty = stella_location_id_to_difficulty[location_id]
+                    lightyear = stella_location_id_to_lightyear[location_id]
+                    new_location = StellaLocation(self.player, location, location_id, deck_region)
+
+                    new_location.deck = deck_name
+                    new_location.difficulty = difficulty
+                    new_location.lightyear = lightyear
+
+                    new_location.progress_type = LocationProgressType.DEFAULT
+
+                    if lightyear >= 5:
+                        add_rule(new_location, lambda state, _lightyear_=lightyear: state.has_from_list(list(cards_and_elements.values()), self.player, 4 + _lightyear_ * 2))

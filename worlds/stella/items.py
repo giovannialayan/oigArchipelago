@@ -184,6 +184,10 @@ fillers: Dict[int, str] = {
     data.code: data.code for item_name, data in item_table.items() if data.code and isFiller(item_name)
 }
 
+cards_and_elements: Dict[int, str] = {
+    data.code: data.code for item_name, data in item_table.items() if data.code and (isCard(item_name) or isElement(item_name))
+}
+
 def isDeck(item_name: str) -> bool: 
     item_id = item_name_to_id[item_name] - offset
     return (item_id >= 1 and item_id <= 39)
