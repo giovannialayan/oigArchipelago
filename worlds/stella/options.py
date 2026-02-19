@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import PerGameCommonOptions, Toggle, Range, Choice
+from Options import PerGameCommonOptions, Toggle, Range, Choice, OptionSet
 
 class Goal(Choice):
     """
@@ -13,6 +13,15 @@ class Goal(Choice):
     option_beat_difficulty = 1
     option_beat_decks_on_difficulty = 2
     default = 0
+
+class DifficultiesWithChecks(OptionSet):
+    """
+    which difficulties should have checks (0-10)
+    note that each difficulty added will increase the number of checks by over 100
+    """
+    display_name = "difficulties with checks"
+    default = ['0', '1', '2']
+    valid_keys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
 class DecksToWin(Range):
     """
@@ -75,6 +84,7 @@ class Traps(Range):
 @dataclass
 class StellaOptions(PerGameCommonOptions):
     goal: Goal
+    difficulties_with_checks: DifficultiesWithChecks
     decks_to_win: DecksToWin
     difficulty_to_win: DifficultyToWin
     minimum_shop_price: MinimumShopPrice

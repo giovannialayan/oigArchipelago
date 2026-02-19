@@ -22,7 +22,7 @@ prev_id = offset
 for deck in deck_id_to_name:
     for lightyear in range(10):
         for difficulty in range(11):
-            location_name = deck_id_to_name[deck] + " Lightyear " + \
+            location_name = deck_id_to_name[deck] + " lightyear " + \
                 str(lightyear + 1) + " difficulty " + str(difficulty)
             location_id = prev_id
             prev_id += 1

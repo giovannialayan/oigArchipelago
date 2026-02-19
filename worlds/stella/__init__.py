@@ -50,12 +50,15 @@ class StellaWorld(World):
 
     required_difficulty = 0
 
+    difficulties_with_checks = []
+
     distributed_fillers = dict()
 
     itempool: list
 
     def generate_early(self):
         self.required_difficulty = self.options.difficulty_to_win.value
+        self.difficulties_with_checks = list(self.options.difficulties_with_checks.value)
         
     def create_items(self):
         your_decks_to_unlock = self.options.your_decks_unlocked_from_start.value
@@ -146,27 +149,29 @@ class StellaWorld(World):
                     location_id = stella_location_name_to_id[location]
                     difficulty = stella_location_id_to_difficulty[location_id]
                     lightyear = stella_location_id_to_lightyear[location_id]
-                    new_location = StellaLocation(self.player, location, location_id, deck_region)
 
-                    new_location.deck = deck_name
-                    new_location.difficulty = difficulty
-                    new_location.lightyear = lightyear
+                    if (str(difficulty) in self.difficulties_with_checks):
+                        new_location = StellaLocation(self.player, location, location_id, deck_region)
 
-                    new_location.progress_type = LocationProgressType.DEFAULT
+                        new_location.deck = deck_name
+                        new_location.difficulty = difficulty
+                        new_location.lightyear = lightyear
 
-                    # if lightyear >= 5:
-                    #     add_rule(new_location, lambda state, _lightyear_=lightyear: state.has_from_list(list(cards_and_elements.values()), self.player, 2 + _lightyear_))
+                        new_location.progress_type = LocationProgressType.DEFAULT
 
-                    # if lightyear > 3:
-                    #     add_rule(new_location, lambda state, _difficulty_=difficulty: state.has_from_list(list(elements.values()), self.player, _difficulty_ * 3))
+                        # if lightyear >= 5:
+                        #     add_rule(new_location, lambda state, _lightyear_=lightyear: state.has_from_list(list(cards_and_elements.values()), self.player, 2 + _lightyear_))
 
-                    if difficulty != 0:
-                        add_rule(new_location, lambda state, _deck_name_=deck_name, _lightyear_=lightyear, _difficulty_=difficulty: state.can_reach_location(
-                        _deck_name_ + " Lightyear " + str(_lightyear_) + " difficulty " + str(_difficulty_ - 1), self.player))
+                        # if lightyear > 3:
+                        #     add_rule(new_location, lambda state, _difficulty_=difficulty: state.has_from_list(list(elements.values()), self.player, _difficulty_ * 3))
 
-                    self.locations_set += 1
-                    all_locations.append(new_location)
-                    deck_region.locations.append(new_location)
+                        if difficulty != 0:
+                            add_rule(new_location, lambda state, _deck_name_=deck_name, _lightyear_=lightyear, _difficulty_=difficulty: state.can_reach_location(
+                            _deck_name_ + " Lightyear " + str(_lightyear_) + " difficulty " + str(_difficulty_ - 1), self.player))
+
+                        self.locations_set += 1
+                        all_locations.append(new_location)
+                        deck_region.locations.append(new_location)
 
             self.multiworld.regions.append(deck_region)
 
@@ -203,6 +208,7 @@ class StellaWorld(World):
         base_data = {
             "goal": self.options.goal.value,
             "decks_to_win": self.options.decks_to_win.value,
+            "difficulties_with_checks": self.difficulties_with_checks,
             "required_difficulty": self.options.difficulty_to_win.value,
             "min_price": min_price,
             "max_price": max_price,
