@@ -167,7 +167,7 @@ class StellaWorld(World):
 
                         if difficulty != 0:
                             add_rule(new_location, lambda state, _deck_name_=deck_name, _lightyear_=lightyear, _difficulty_=difficulty: state.can_reach_location(
-                            _deck_name_ + " Lightyear " + str(_lightyear_) + " difficulty " + str(_difficulty_ - 1), self.player))
+                            _deck_name_ + " lightyear " + str(_lightyear_) + " difficulty " + str(_difficulty_ - 1), self.player))
 
                         self.locations_set += 1
                         all_locations.append(new_location)
