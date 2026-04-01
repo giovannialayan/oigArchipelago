@@ -1,6 +1,6 @@
 from typing import Dict, Union, List
 from worlds.AutoWorld import World, WebWorld
-from .items import StellaItem, ItemData, cards, item_table, isYourDeck, isTheirDeck, isProgression, isUseful, item_name_to_id, item_id_to_name, deck_id_to_name, \
+from .items import StellaItem, ItemData, cards, item_table, isYourDeck, isTheirDeck, isProgression, isUseful, isGoal, isTrap, isFiller, item_name_to_id, item_id_to_name, deck_id_to_name, \
 cards_and_elements, elements
 from .items import offset as item_offset
 from .locations import StellaLocation, stella_location_name_to_id, stella_location_id_to_name, stella_location_id_to_difficulty, stella_location_id_to_lightyear, \
@@ -98,7 +98,7 @@ class StellaWorld(World):
 
         self.itempool = []
         for item_name in item_table:
-            if not item_name in excluded_items: 
+            if not item_name in excluded_items and not isTrap(item_name) and not isFiller(item_name) and not isGoal(item_name):
                 self.itempool.append(self.create_item(item_name))
 
         for i in range(self.options.traps.value):
@@ -173,30 +173,34 @@ class StellaWorld(World):
                         all_locations.append(new_location)
                         deck_region.locations.append(new_location)
 
+            # place event items for deck completion tracking
+            goal_name = deck_name + " completion progression"
+            goal_location = StellaLocation(self.player, goal_name, None, deck_region)
+            goal_location.place_locked_item(item_table[goal_name])
+
+            deck_region.locations.append(goal_location)
+
             self.multiworld.regions.append(deck_region)
 
             # note: might need more here for deck difficulties?
             menu_region.connect(deck_region, None, lambda state, _deck_name_=deck_name: state.has(_deck_name_, self.player))
 
-        def can_reach_count(state: CollectionState, locations: List[StellaLocation], count: int = 1) -> bool:
-            counter = 0
-            for loc in locations:
-                if state.can_reach_location(loc.name, self.player):
-                    counter += 1
-                    if counter >= count:
-                        return True
-            return False
-    
-        def get_locations_where(deck: str = None, lightyear: int = None, difficulty: int = None) -> list:
-            return list([loc for loc in all_locations if (lightyear == None or loc.lightyear == lightyear) and (difficulty == None or loc.difficulty == difficulty) and (deck == None or loc.deck == deck)])
+    def set_rules(self):
+        def get_goal_count(state: CollectionState):
+            count = 0
+            for item_name in item_table:
+                if isGoal(item_name) and state.has(item_name, self.player):
+                    count+=1
+            return count
         
-        #goals
-        if self.options.goal.value == Goal.option_beat_decks:
-            self.multiworld.completion_condition[self.player] = lambda state: can_reach_count(state, get_locations_where(None, 10, 0), self.options.decks_to_win.value)
-        elif self.options.goal.value == Goal.option_beat_decks_on_difficulty:
-            self.multiworld.completion_condition[self.player] = lambda state: can_reach_count(state, get_locations_where(None, 10, self.required_difficulty), self.options.decks_to_win.value)
+        # option_beat_decks: goal item is rewarded in game upon completing lightyear 10 for the first time on a deck
+        # option_beat_decks_on_difficulty: same as above but the game will reward it only on the specified difficulty
+        # option_beat_difficulty: same as above
+
+        if self.options.goal.value == Goal.option_beat_decks or self.options.goal.value == Goal.option_beat_decks_on_difficulty:
+            self.multiworld.completion_condition[self.player] = lambda state: get_goal_count(state) >=  self.options.decks_to_win.value    
         elif self.options.goal.value == Goal.option_beat_difficulty:
-            self.multiworld.completion_condition[self.player] = lambda state: can_reach_count(state, get_locations_where(None, 10, self.required_difficulty), 1)
+            self.multiworld.completion_condition[self.player] = lambda state: get_goal_count(state) >= 1    
 
     def fill_slot_data(self):
         min_price = self.options.minimum_shop_price.value

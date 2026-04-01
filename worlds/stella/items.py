@@ -149,7 +149,25 @@ item_table: Dict[str, ItemData] = {
     "free element in shop": ItemData(offset + 323),
     "free card in shop": ItemData(offset + 324),
     "free deck expansion in shop": ItemData(offset + 325),
-    "free +max element power in shop": ItemData(offset + 326)
+    "free +max element power in shop": ItemData(offset + 326),
+
+    #goal tracking
+    "first stella completetion progress": ItemData(None),
+    "gold stella completetion progress": ItemData(None),
+    "element stella completetion progress": ItemData(None),
+    "despair stella completetion progress": ItemData(None),
+    "collector stella completetion progress": ItemData(None),
+    "chaos stella completetion progress": ItemData(None),
+    "oracle stella completetion progress": ItemData(None),
+
+    #their decks
+    "galaxy completetion progress": ItemData(None),
+    "halo completetion progress": ItemData(None),
+    "supercluster completetion progress": ItemData(None),
+    "stellar stream completetion progress": ItemData(None),
+    "starburst completetion progress": ItemData(None),
+    "blazar completetion progress": ItemData(None),
+    "brightest cluster completetion progress": ItemData(None),
 }
 
 def isDeck(item_name: str) -> bool: 
@@ -180,9 +198,13 @@ def isFiller(item_name: str) -> bool:
     item_id = item_name_to_id[item_name] - offset
     return (item_id >= 320 and item_id <= 339)
 
+def isGoal(item_name: str) -> bool:
+    return item_name.endswith("completetion progress")
+
 def isProgression(item_name: str) -> bool:
     return (
-        isDeck(item_name)
+        isDeck(item_name) or
+        isGoal(item_name)
     )
 
 def isUseful(item_name: str) -> bool:

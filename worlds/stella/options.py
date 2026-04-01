@@ -54,7 +54,7 @@ class MaximumShopPrice(Range):
     display_name = "maximum AP item price in shop"
     range_start = 1
     range_end = 200
-    default = 30
+    default = 20
 
 class YourDecksUnlockedFromStart(Range):
     """number of random stella decks you want to start with."""
