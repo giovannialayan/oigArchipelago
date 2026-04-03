@@ -175,7 +175,7 @@ class StellaWorld(World):
                         deck_region.locations.append(new_location)
 
             # place event items for deck completion tracking
-            goal_name = deck_name + " completion progression"
+            goal_name = deck_name + " completion progress"
             goal_location = StellaLocation(self.player, goal_name, None, deck_region)
             goal_location.place_locked_item(item_table[goal_name])
 

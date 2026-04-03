@@ -152,22 +152,22 @@ item_table: Dict[str, ItemData] = {
     "free +max element power in shop": ItemData(offset + 326),
 
     #goal tracking
-    "first stella completetion progress": ItemData(None),
-    "gold stella completetion progress": ItemData(None),
-    "element stella completetion progress": ItemData(None),
-    "despair stella completetion progress": ItemData(None),
-    "collector stella completetion progress": ItemData(None),
-    "chaos stella completetion progress": ItemData(None),
-    "oracle stella completetion progress": ItemData(None),
+    "first stella completion progress": ItemData(None),
+    "gold stella completion progress": ItemData(None),
+    "element stella completion progress": ItemData(None),
+    "despair stella completion progress": ItemData(None),
+    "collector stella completion progress": ItemData(None),
+    "chaos stella completion progress": ItemData(None),
+    "oracle stella completion progress": ItemData(None),
 
     #their decks
-    "galaxy completetion progress": ItemData(None),
-    "halo completetion progress": ItemData(None),
-    "supercluster completetion progress": ItemData(None),
-    "stellar stream completetion progress": ItemData(None),
-    "starburst completetion progress": ItemData(None),
-    "blazar completetion progress": ItemData(None),
-    "brightest cluster completetion progress": ItemData(None),
+    "galaxy completion progress": ItemData(None),
+    "halo completion progress": ItemData(None),
+    "supercluster completion progress": ItemData(None),
+    "stellar stream completion progress": ItemData(None),
+    "starburst completion progress": ItemData(None),
+    "blazar completion progress": ItemData(None),
+    "brightest cluster completion progress": ItemData(None),
 }
 
 def isDeck(item_name: str) -> bool: 
@@ -199,7 +199,7 @@ def isFiller(item_name: str) -> bool:
     return (item_id >= 320 and item_id <= 339)
 
 def isGoal(item_name: str) -> bool:
-    return item_name.endswith("completetion progress")
+    return item_name.endswith("completion progress")
 
 def isProgression(item_name: str) -> bool:
     return (
