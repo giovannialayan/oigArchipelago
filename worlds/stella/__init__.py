@@ -101,14 +101,15 @@ class StellaWorld(World):
             if not item_name in excluded_items and not isTrap(item_name) and not isFiller(item_name) and not isGoal(item_name):
                 self.itempool.append(self.create_item(item_name))
 
-        for i in range(self.options.traps.value):
-            trap_id = self.random.randint(300, 306)
-            self.itempool.append(self.create_item(item_id_to_name[trap_id + item_offset]))
-
         pool_remaining = self.locations_set - len(self.itempool)
         for i in range(pool_remaining):
-            filler_id = self.random.randint(320, 326)
-            self.itempool.append(self.create_item(item_id_to_name[filler_id + item_offset]))
+            trap_chance = self.random.randint(1, 100)
+            if (trap_chance <= self.options.traps.value):
+                trap_id = self.random.randint(300, 306)
+                self.itempool.append(self.create_item(item_id_to_name[trap_id + item_offset]))
+            else:
+                filler_id = self.random.randint(320, 326)
+                self.itempool.append(self.create_item(item_id_to_name[filler_id + item_offset]))
 
         self.multiworld.itempool += self.itempool
 

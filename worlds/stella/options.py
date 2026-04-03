@@ -75,8 +75,8 @@ class DeathLink(Toggle):
     display_name = "Death Link"
 
 class Traps(Range):
-    """number of items that will be traps"""
-    display_name = "number of trap items"
+    """percentage of filler items that will be traps"""
+    display_name = "percentage of trap items"
     range_start = 0
     range_end = 100
     default = 10
