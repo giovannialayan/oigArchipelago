@@ -1,7 +1,7 @@
 from typing import Dict, Union, List
 from worlds.AutoWorld import World, WebWorld
-from .items import StellaItem, ItemData, cards, item_table, isYourDeck, isTheirDeck, isProgression, isUseful, isGoal, isTrap, isFiller, item_name_to_id, item_id_to_name, deck_id_to_name, \
-cards_and_elements, elements
+from .items import StellaItem, ItemData, cards, item_table, isYourDeck, isTheirDeck, isProgression, isUseful, isTrap, isFiller, item_name_to_id, item_id_to_name, deck_id_to_name, \
+cards_and_elements, elements, goal_list
 from .items import offset as item_offset
 from .locations import StellaLocation, stella_location_name_to_id, stella_location_id_to_name, stella_location_id_to_difficulty, stella_location_id_to_lightyear, \
 card_id_offset, element_id_offset, max_shop_card_checks, max_shop_element_checks, diffiulty_list
@@ -98,7 +98,7 @@ class StellaWorld(World):
 
         self.itempool = []
         for item_name in item_table:
-            if not item_name in excluded_items and not isTrap(item_name) and not isFiller(item_name) and not isGoal(item_name):
+            if not item_name in excluded_items and not isTrap(item_name) and not isFiller(item_name):
                 self.itempool.append(self.create_item(item_name))
 
         pool_remaining = self.locations_set - len(self.itempool)
@@ -177,7 +177,7 @@ class StellaWorld(World):
             # place event items for deck completion tracking
             goal_name = deck_name + " completion progress"
             goal_location = StellaLocation(self.player, goal_name, None, deck_region)
-            goal_location.place_locked_item(item_table[goal_name])
+            goal_location.place_locked_item(StellaItem(goal_name, ItemClassification.progression, None, self.player))
 
             deck_region.locations.append(goal_location)
 
@@ -189,8 +189,8 @@ class StellaWorld(World):
     def set_rules(self):
         def get_goal_count(state: CollectionState):
             count = 0
-            for item_name in item_table:
-                if isGoal(item_name) and state.has(item_name, self.player):
+            for goal_name in goal_list:
+                if state.has(goal_name, self.player):
                     count+=1
             return count
         

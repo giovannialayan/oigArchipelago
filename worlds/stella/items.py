@@ -150,25 +150,24 @@ item_table: Dict[str, ItemData] = {
     "free card in shop": ItemData(offset + 324),
     "free deck expansion in shop": ItemData(offset + 325),
     "free +max element power in shop": ItemData(offset + 326),
-
-    #goal tracking
-    "first stella completion progress": ItemData(None),
-    "gold stella completion progress": ItemData(None),
-    "element stella completion progress": ItemData(None),
-    "despair stella completion progress": ItemData(None),
-    "collector stella completion progress": ItemData(None),
-    "chaos stella completion progress": ItemData(None),
-    "oracle stella completion progress": ItemData(None),
-
-    #their decks
-    "galaxy completion progress": ItemData(None),
-    "halo completion progress": ItemData(None),
-    "supercluster completion progress": ItemData(None),
-    "stellar stream completion progress": ItemData(None),
-    "starburst completion progress": ItemData(None),
-    "blazar completion progress": ItemData(None),
-    "brightest cluster completion progress": ItemData(None),
 }
+
+goal_list = [
+    "first stella completion progress", 
+    "gold stella completion progress", 
+    "element stella completion progress",
+    "despair stella completion progress",
+    "collector stella completion progress",
+    "chaos stella completion progress",
+    "oracle stella completion progress",
+    "galaxy completion progress",
+    "halo completion progress",
+    "supercluster completion progress",
+    "stellar stream completion progress",
+    "starburst completion progress",
+    "blazar completion progress",
+    "brightest cluster completion progress",
+]
 
 def isDeck(item_name: str) -> bool: 
     item_id = item_name_to_id[item_name] - offset
@@ -198,13 +197,9 @@ def isFiller(item_name: str) -> bool:
     item_id = item_name_to_id[item_name] - offset
     return (item_id >= 320 and item_id <= 339)
 
-def isGoal(item_name: str) -> bool:
-    return item_name.endswith("completion progress")
-
 def isProgression(item_name: str) -> bool:
     return (
-        isDeck(item_name) or
-        isGoal(item_name)
+        isDeck(item_name)
     )
 
 def isUseful(item_name: str) -> bool:
