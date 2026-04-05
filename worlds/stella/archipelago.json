@@ -1,4 +1,5 @@
 {
   "game": "Stella",
-  "authors": ["oig"]
+  "authors": ["oig"],
+  "world_version": "0.0.1"
 }

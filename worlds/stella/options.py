@@ -30,7 +30,7 @@ class DecksToWin(Range):
     display_name = "required decks to win"
     range_start = 1
     range_end = 16
-    default = 6
+    default = 8
 
 class DifficultyToWin(Range):
     """

@@ -4,7 +4,7 @@ from .items import StellaItem, ItemData, cards, item_table, isYourDeck, isTheirD
 cards_and_elements, elements, goal_list
 from .items import offset as item_offset
 from .locations import StellaLocation, stella_location_name_to_id, stella_location_id_to_name, stella_location_id_to_difficulty, stella_location_id_to_lightyear, \
-card_id_offset, element_id_offset, max_shop_card_checks, max_shop_element_checks, diffiulty_list
+card_id_offset, element_id_offset, max_shop_card_checks, max_shop_element_checks, diffiulty_list, stella_location_goal_to_id
 from .options import StellaOptions, Goal, DecksToWin, DifficultyToWin
 from BaseClasses import ItemClassification, Region, LocationProgressType, CollectionState, Tutorial
 from worlds.generic.Rules import add_rule
@@ -176,7 +176,7 @@ class StellaWorld(World):
 
             # place event items for deck completion tracking
             goal_name = deck_name + " completion progress"
-            goal_location = StellaLocation(self.player, goal_name, None, deck_region)
+            goal_location = StellaLocation(self.player, goal_name, stella_location_goal_to_id[goal_name], deck_region)
             goal_location.place_locked_item(StellaItem(goal_name, ItemClassification.progression, None, self.player))
 
             deck_region.locations.append(goal_location)
