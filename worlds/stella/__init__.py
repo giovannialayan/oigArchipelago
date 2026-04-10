@@ -61,6 +61,10 @@ class StellaWorld(World):
         self.difficulties_with_checks = list(self.options.difficulties_with_checks.value)
         
     def create_items(self):
+        for goal in goal_list:
+            goal_location = self.multiworld.get_location(goal, self.player)
+            goal_location.place_locked_item(StellaItem(goal, ItemClassification.progression, None, self.player))
+
         your_decks_to_unlock = self.options.your_decks_unlocked_from_start.value
         their_decks_to_unlock = self.options.their_decks_unlocked_from_start.value
 
@@ -140,7 +144,6 @@ class StellaWorld(World):
         menu_region = Region("Menu", self.player, self.multiworld)
 
         self.multiworld.regions.append(menu_region)
-        all_locations: List[StellaLocation] = list()
 
         for deck in deck_id_to_name:
             deck_name = deck_id_to_name[deck]
@@ -171,9 +174,9 @@ class StellaWorld(World):
                             _deck_name_ + " lightyear " + str(_lightyear_) + " difficulty " + str(_difficulty_ - 1), self.player))
 
                         self.locations_set += 1
-                        all_locations.append(new_location)
                         deck_region.locations.append(new_location)
 
+            # idk why but this doesnt work, when i do get location id by name it's always -1 no matter what i do
             # place event items for deck completion tracking
             goal_name = deck_name + " completion progress"
             goal_location = StellaLocation(self.player, goal_name, stella_location_goal_to_id[goal_name], deck_region)
@@ -185,6 +188,15 @@ class StellaWorld(World):
 
             # note: might need more here for deck difficulties?
             menu_region.connect(deck_region, None, lambda state, _deck_name_=deck_name: state.has(_deck_name_, self.player))
+
+        # place event items for deck completion tracking
+        # goal_region = Region("Goal", self.player, self.multiworld)
+        # for goal in goal_list:
+        #     goal_location = StellaLocation(self.player, goal, stella_location_name_to_id[goal], goal_region)
+        #     goal_region.locations.append(goal_location)
+
+        # self.multiworld.regions.append(goal_region)
+        # menu_region.connect(goal_region, None, None)
 
     def set_rules(self):
         def get_goal_count(state: CollectionState):
