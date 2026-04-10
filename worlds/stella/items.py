@@ -153,20 +153,20 @@ item_table: Dict[str, ItemData] = {
 }
 
 goal_list = [
-    "first stella completion progress", 
-    "gold stella completion progress", 
-    "element stella completion progress",
-    "despair stella completion progress",
-    "collector stella completion progress",
-    "chaos stella completion progress",
-    "oracle stella completion progress",
-    "galaxy completion progress",
-    "halo completion progress",
-    "supercluster completion progress",
-    "stellar stream completion progress",
-    "starburst completion progress",
-    "blazar completion progress",
-    "brightest cluster completion progress",
+    "first stella completed", 
+    "gold stella completed", 
+    "element stella completed",
+    "despair stella completed",
+    "collector stella completed",
+    "chaos stella completed",
+    "oracle stella completed",
+    "galaxy completed",
+    "halo completed",
+    "supercluster completed",
+    "stellar stream completed",
+    "starburst completed",
+    "blazar completed",
+    "brightest cluster completed",
 ]
 
 def isDeck(item_name: str) -> bool: 

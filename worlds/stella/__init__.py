@@ -4,7 +4,7 @@ from .items import StellaItem, ItemData, cards, item_table, isYourDeck, isTheirD
 cards_and_elements, elements, goal_list
 from .items import offset as item_offset
 from .locations import StellaLocation, stella_location_name_to_id, stella_location_id_to_name, stella_location_id_to_difficulty, stella_location_id_to_lightyear, \
-card_id_offset, element_id_offset, max_shop_card_checks, max_shop_element_checks, diffiulty_list, stella_location_goal_to_id
+max_shop_card_checks, max_shop_element_checks, diffiulty_list, stella_location_goal_to_id
 from .options import StellaOptions, Goal, DecksToWin, DifficultyToWin
 from BaseClasses import ItemClassification, Region, LocationProgressType, CollectionState, Tutorial
 from worlds.generic.Rules import add_rule
@@ -61,10 +61,6 @@ class StellaWorld(World):
         self.difficulties_with_checks = list(self.options.difficulties_with_checks.value)
         
     def create_items(self):
-        for goal in goal_list:
-            goal_location = self.multiworld.get_location(goal, self.player)
-            goal_location.place_locked_item(StellaItem(goal, ItemClassification.progression, None, self.player))
-
         your_decks_to_unlock = self.options.your_decks_unlocked_from_start.value
         their_decks_to_unlock = self.options.their_decks_unlocked_from_start.value
 
@@ -149,7 +145,7 @@ class StellaWorld(World):
             deck_name = deck_id_to_name[deck]
             deck_region = Region(deck_name, self.player, self.multiworld)
             for location in stella_location_name_to_id:
-                if str(location).startswith(deck_name):
+                if not str(location).endswith("completed"):
                     location_id = stella_location_name_to_id[location]
                     difficulty = stella_location_id_to_difficulty[location_id]
                     lightyear = stella_location_id_to_lightyear[location_id]
@@ -176,12 +172,11 @@ class StellaWorld(World):
                         self.locations_set += 1
                         deck_region.locations.append(new_location)
 
-            # idk why but this doesnt work, when i do get location id by name it's always -1 no matter what i do
             # place event items for deck completion tracking
-            goal_name = deck_name + " completion progress"
-            goal_location = StellaLocation(self.player, goal_name, stella_location_goal_to_id[goal_name], deck_region)
-            goal_location.place_locked_item(StellaItem(goal_name, ItemClassification.progression, None, self.player))
+            goal_name = deck_name + " completed"
+            goal_location = StellaLocation(self.player, goal_name, stella_location_name_to_id[goal_name], deck_region)
 
+            self.locations_set += 1
             deck_region.locations.append(goal_location)
 
             self.multiworld.regions.append(deck_region)
@@ -189,29 +184,16 @@ class StellaWorld(World):
             # note: might need more here for deck difficulties?
             menu_region.connect(deck_region, None, lambda state, _deck_name_=deck_name: state.has(_deck_name_, self.player))
 
-        # place event items for deck completion tracking
-        # goal_region = Region("Goal", self.player, self.multiworld)
-        # for goal in goal_list:
-        #     goal_location = StellaLocation(self.player, goal, stella_location_name_to_id[goal], goal_region)
-        #     goal_region.locations.append(goal_location)
-
-        # self.multiworld.regions.append(goal_region)
-        # menu_region.connect(goal_region, None, None)
-
     def set_rules(self):
         def get_goal_count(state: CollectionState):
-            count = 0
-            for goal_name in goal_list:
-                if state.has(goal_name, self.player):
-                    count+=1
-            return count
+            return sum(1 for location in state.locations_checked if location.name in goal_list)
         
         # option_beat_decks: goal item is rewarded in game upon completing lightyear 10 for the first time on a deck
         # option_beat_decks_on_difficulty: same as above but the game will reward it only on the specified difficulty
         # option_beat_difficulty: same as above
 
         if self.options.goal.value == Goal.option_beat_decks or self.options.goal.value == Goal.option_beat_decks_on_difficulty:
-            self.multiworld.completion_condition[self.player] = lambda state: get_goal_count(state) >=  self.options.decks_to_win.value    
+            self.multiworld.completion_condition[self.player] = lambda state: get_goal_count(state) >= self.options.decks_to_win.value    
         elif self.options.goal.value == Goal.option_beat_difficulty:
             self.multiworld.completion_condition[self.player] = lambda state: get_goal_count(state) >= 1    
 
