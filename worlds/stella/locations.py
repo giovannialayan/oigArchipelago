@@ -1,8 +1,5 @@
 from BaseClasses import Location
-from .items import deck_id_to_name, elements, cards, goal_list
-
-max_shop_card_checks = 100
-max_shop_element_checks = 100
+from .items import deck_id_to_name
 
 offset = 84275609_000
 
@@ -18,7 +15,6 @@ stella_location_name_to_id = dict()
 stella_location_id_to_name = dict()
 stella_location_id_to_difficulty = dict()
 stella_location_id_to_lightyear = dict()
-stella_location_goal_to_id = dict()
 
 prev_id = offset
 
@@ -34,40 +30,25 @@ for deck in deck_id_to_name:
             stella_location_id_to_difficulty[location_id] = difficulty
             stella_location_id_to_lightyear[location_id] = lightyear + 1
 
-# card_id_offset = prev_id + 1
-
-# for i in range(6):
-#     for j in range(max_shop_card_checks):
-#         prev_id += 1
-#         location_name = "Shop card " + str(j + 1) + " at difficulty " + str(i)
-#         location_id = prev_id
-
-#         stella_location_name_to_id[location_name] = location_id
-#         stella_location_id_to_name[location_id] = location_name
-
-# element_id_offset = prev_id + 1
-
-# for i in range(6):
-#     for j in range(max_shop_element_checks):
-#         prev_id += 1
-#         location_name = "Shop element " + str(j + 1) + " at difficulty " + str(i)
-#         location_id = prev_id
-
-#         stella_location_name_to_id[location_name] = location_id
-#         stella_location_id_to_name[location_id] = location_name
+goal_list = [
+    "first stella completed", 
+    "gold stella completed", 
+    "element stella completed",
+    "despair stella completed",
+    "collector stella completed",
+    "chaos stella completed",
+    "oracle stella completed",
+    "galaxy completed",
+    "halo completed",
+    "supercluster completed",
+    "stellar stream completed",
+    "starburst completed",
+    "blazar completed",
+    "brightest cluster completed",
+]
 
 for goal in goal_list:
     location_id = prev_id
     prev_id += 1
-    stella_location_goal_to_id[goal] = location_id
     stella_location_name_to_id[goal] = location_id
     stella_location_id_to_name[location_id] = goal
-
-# for deck in deck_id_to_name:
-#     for difficulty in diffiulty_list:
-#         goal_name = deck_id_to_name[deck] + " difficulty " + str(difficulty) + " completed"
-#         location_id = prev_id
-#         prev_id += 1
-#         stella_location_goal_to_id[goal_name] = location_id
-#         stella_location_name_to_id[goal_name] = location_id
-#         stella_location_id_to_name[location_id] = goal_name

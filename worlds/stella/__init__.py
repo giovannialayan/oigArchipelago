@@ -1,12 +1,10 @@
-from typing import Dict, Union, List
+from typing import Dict, Union
 from worlds.AutoWorld import World, WebWorld
-from .items import StellaItem, ItemData, cards, item_table, isYourDeck, isTheirDeck, isProgression, isUseful, isTrap, isFiller, item_name_to_id, item_id_to_name, deck_id_to_name, \
-cards_and_elements, elements, goal_list
+from .items import StellaItem, ItemData, item_table, isYourDeck, isTheirDeck, isProgression, isUseful, isTrap, isFiller, item_name_to_id, item_id_to_name, deck_id_to_name
 from .items import offset as item_offset
-from .locations import StellaLocation, stella_location_name_to_id, stella_location_id_to_name, stella_location_id_to_difficulty, stella_location_id_to_lightyear, \
-max_shop_card_checks, max_shop_element_checks, diffiulty_list, stella_location_goal_to_id
-from .options import StellaOptions, Goal, DecksToWin, DifficultyToWin
-from BaseClasses import ItemClassification, Region, LocationProgressType, CollectionState, Tutorial
+from .locations import StellaLocation, stella_location_name_to_id, stella_location_id_to_name, stella_location_id_to_difficulty, stella_location_id_to_lightyear
+from .options import StellaOptions
+from BaseClasses import ItemClassification, Region, LocationProgressType, Tutorial
 from worlds.generic.Rules import add_rule
 
 #https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md
@@ -159,12 +157,6 @@ class StellaWorld(World):
 
                         new_location.progress_type = LocationProgressType.DEFAULT
 
-                        # if lightyear >= 5:
-                        #     add_rule(new_location, lambda state, _lightyear_=lightyear: state.has_from_list(list(cards_and_elements.values()), self.player, 2 + _lightyear_))
-
-                        # if lightyear > 3:
-                        #     add_rule(new_location, lambda state, _difficulty_=difficulty: state.has_from_list(list(elements.values()), self.player, _difficulty_ * 3))
-
                         if difficulty != 0:
                             add_rule(new_location, lambda state, _deck_name_=deck_name, _lightyear_=lightyear, _difficulty_=difficulty: state.can_reach_location(
                             _deck_name_ + " lightyear " + str(_lightyear_) + " difficulty " + str(_difficulty_ - 1), self.player))
@@ -172,7 +164,7 @@ class StellaWorld(World):
                         self.locations_set += 1
                         deck_region.locations.append(new_location)
 
-            # place event items for deck completion tracking
+            # place deck completed locations
             goal_name = deck_name + " completed"
             goal_location = StellaLocation(self.player, goal_name, stella_location_name_to_id[goal_name], deck_region)
 
@@ -181,21 +173,7 @@ class StellaWorld(World):
 
             self.multiworld.regions.append(deck_region)
 
-            # note: might need more here for deck difficulties?
-            menu_region.connect(deck_region, None, lambda state, _deck_name_=deck_name: state.has(_deck_name_, self.player))
-
-    def set_rules(self):
-        def get_goal_count(state: CollectionState):
-            return sum(1 for location in state.locations_checked if location.name in goal_list)
-        
-        # option_beat_decks: goal item is rewarded in game upon completing lightyear 10 for the first time on a deck
-        # option_beat_decks_on_difficulty: same as above but the game will reward it only on the specified difficulty
-        # option_beat_difficulty: same as above
-
-        if self.options.goal.value == Goal.option_beat_decks or self.options.goal.value == Goal.option_beat_decks_on_difficulty:
-            self.multiworld.completion_condition[self.player] = lambda state: get_goal_count(state) >= self.options.decks_to_win.value    
-        elif self.options.goal.value == Goal.option_beat_difficulty:
-            self.multiworld.completion_condition[self.player] = lambda state: get_goal_count(state) >= 1    
+            menu_region.connect(deck_region, None, lambda state, _deck_name_=deck_name: state.has(_deck_name_, self.player))     
 
     def fill_slot_data(self):
         min_price = self.options.minimum_shop_price.value

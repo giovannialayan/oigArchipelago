@@ -40,7 +40,7 @@ item_table: Dict[str, ItemData] = {
     "red supergiant": ItemData(offset + 47),
     "blue supergiant": ItemData(offset + 48),
     "hypergiant": ItemData(offset + 49),
-    "ultra-cool": ItemData(offset + 50),
+    "ultra-cool dwarf": ItemData(offset + 50),
     "quasi-star": ItemData(offset + 51),
     "hybrid": ItemData(offset + 52),
     "exotic star": ItemData(offset + 53),
@@ -151,23 +151,6 @@ item_table: Dict[str, ItemData] = {
     "free deck expansion in shop": ItemData(offset + 325),
     "free +max element power in shop": ItemData(offset + 326),
 }
-
-goal_list = [
-    "first stella completed", 
-    "gold stella completed", 
-    "element stella completed",
-    "despair stella completed",
-    "collector stella completed",
-    "chaos stella completed",
-    "oracle stella completed",
-    "galaxy completed",
-    "halo completed",
-    "supercluster completed",
-    "stellar stream completed",
-    "starburst completed",
-    "blazar completed",
-    "brightest cluster completed",
-]
 
 def isDeck(item_name: str) -> bool: 
     item_id = item_name_to_id[item_name] - offset
