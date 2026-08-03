@@ -17,10 +17,10 @@ class Goal(Choice):
 class DifficultiesWithChecks(OptionSet):
     """
     which difficulties should have checks (0-10)
-    note that each difficulty added will increase the number of checks by over 100
+    note that each difficulty added will increase the number of filler checks by over 100
     """
     display_name = "difficulties with checks"
-    default = ['0', '1', '2']
+    default = ['0']
     valid_keys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
 class DecksToWin(Range):
@@ -53,7 +53,7 @@ class MaximumShopPrice(Range):
     """the maximum price for an AP item in the shop"""
     display_name = "maximum AP item price in shop"
     range_start = 1
-    range_end = 200
+    range_end = 100
     default = 20
 
 class YourDecksUnlockedFromStart(Range):
