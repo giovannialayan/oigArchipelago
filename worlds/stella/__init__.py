@@ -1,10 +1,10 @@
-from typing import Dict, Union
+from typing import Dict, Union, List
 from worlds.AutoWorld import World, WebWorld
 from .items import StellaItem, ItemData, item_table, isYourDeck, isTheirDeck, isProgression, isUseful, isTrap, isFiller, item_name_to_id, item_id_to_name, deck_id_to_name
 from .items import offset as item_offset
 from .locations import StellaLocation, stella_location_name_to_id, stella_location_id_to_name, stella_location_id_to_difficulty, stella_location_id_to_lightyear
-from .options import StellaOptions
-from BaseClasses import ItemClassification, Region, LocationProgressType, Tutorial
+from .options import StellaOptions, Goal
+from BaseClasses import ItemClassification, Region, LocationProgressType, Tutorial, CollectionState
 from worlds.generic.Rules import add_rule
 
 #https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/world%20api.md
@@ -37,8 +37,6 @@ class StellaWorld(World):
     topology_present = False
 
     locations_set = 0
-    shop_card_locations = dict()
-    shop_element_locations = dict()
 
     item_name_to_id = item_name_to_id
     item_id_to_name = item_id_to_name
@@ -139,11 +137,13 @@ class StellaWorld(World):
 
         self.multiworld.regions.append(menu_region)
 
+        placed_locations: List[StellaLocation] = list()
+
         for deck in deck_id_to_name:
             deck_name = deck_id_to_name[deck]
             deck_region = Region(deck_name, self.player, self.multiworld)
             for location in stella_location_name_to_id:
-                if not str(location).endswith("completed"):
+                if not str(location).endswith("completed") and str(location).startswith(deck_name):
                     location_id = stella_location_name_to_id[location]
                     difficulty = stella_location_id_to_difficulty[location_id]
                     lightyear = stella_location_id_to_lightyear[location_id]
@@ -163,6 +163,7 @@ class StellaWorld(World):
 
                         self.locations_set += 1
                         deck_region.locations.append(new_location)
+                        placed_locations.append(new_location)
 
             # place deck completed locations
             goal_name = deck_name + " completed"
@@ -173,7 +174,31 @@ class StellaWorld(World):
 
             self.multiworld.regions.append(deck_region)
 
-            menu_region.connect(deck_region, None, lambda state, _deck_name_=deck_name: state.has(_deck_name_, self.player))     
+            menu_region.connect(deck_region, None, lambda state, _deck_name_=deck_name: state.has(_deck_name_, self.player))
+
+            #completion conditions
+            def can_reach_count(state: CollectionState, locations: List[StellaLocation], count: int = 1) -> bool:
+                counter = 0
+                for loc in locations:
+                    if state.can_reach_location(loc.name, self.player):
+                        counter += 1
+                        if counter >= count:
+                            return True
+                return False
+
+            def get_locations_where(deck: str = None, lightyear: int = None, difficulty: int = None) -> list:
+                return list([element for element in placed_locations 
+                             if (deck == None or element.deck == deck)
+                             and (lightyear == None or element.lightyear == lightyear)
+                             and (difficulty == None or element.difficulty == difficulty)])
+            
+            if self.options.goal.value == Goal.option_beat_decks:
+                self.multiworld.completion_condition[self.player] = lambda state: can_reach_count(state, get_locations_where(None, 10, None), self.options.decks_to_win.value)
+            elif self.options.goal.value == Goal.option_beat_decks_on_difficulty:
+                self.multiworld.completion_condition[self.player] = lambda state: can_reach_count(
+                    state, get_locations_where(None, 10, self.options.difficulty_to_win.value), self.options.decks_to_win.value)
+            elif self.options.goal.value == Goal.option_beat_difficulty:
+                self.multiworld.completion_condition[self.player] = lambda state: can_reach_count(state, get_locations_where(None, 10, self.options.difficulty_to_win.value), 2)
 
     def fill_slot_data(self):
         min_price = self.options.minimum_shop_price.value
